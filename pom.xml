@@ -16,10 +16,8 @@
         <module>common-service</module>
         <module>file-service</module>
         <module>mail-service</module>
-        <module>classroom-service</module>
         <module>job-service</module>
         <module>classroom-service</module>
-        <module>job-service</module>
     </modules>
 
     <!-- 1 确定spring boot的版本-->
