@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.ClassRoomInfoMapper">
+
+    <!--查询申请记录的map-->
+    <resultMap id="apply_record_map" type="world.hzq.linkcode.vo.ApplyRecordVO">
+        <id column="a_id" property="id" jdbcType="BIGINT"/>
+        <result column="a_apply_status" property="applyStatus" jdbcType="VARCHAR"/>
+        <result column="a_apply_time" property="applyTime" jdbcType="DATETIMEOFFSET"/>
+        <result column="a_expiration_time" property="expirationTime" jdbcType="DATE"/>
+        <result column="a_nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="a_apply_time" property="applyTime" jdbcType="DATETIMEOFFSET"/>
+        <association property="applyStudent" javaType="world.hzq.linkcode.entity.User">
+            <id column="s_id" property="id" jdbcType="BIGINT"/>
+            <result column="s_nick_name" property="nickName" jdbcType="VARCHAR"/>
+            <result column="s_email" property="email" jdbcType="VARCHAR"/>
+            <result column="s_phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+            <result column="s_nick_name" property="nickName" jdbcType="VARCHAR"/>
+        </association>
+        <association property="teacher" javaType="world.hzq.linkcode.entity.User">
+            <id column="t_id" property="id" jdbcType="VARCHAR"/>
+            <result column="t_nick_name" property="nickName" jdbcType="VARCHAR"/>
+            <result column="t_email" property="email" jdbcType="VARCHAR"/>
+            <result column="t_phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+            <result column="t_nick_name" property="nickName" jdbcType="VARCHAR"/>
+        </association>
+        <association property="classRoom" javaType="world.hzq.linkcode.entity.ClassRoom">
+            <id column="c_id" property="id" jdbcType="BIGINT"/>
+            <result column="c_name" property="name" jdbcType="VARCHAR"/>
+            <result column="c_accouncement" property="accouncement" jdbcType="VARCHAR"/>
+            <result column="c_number" property="number" jdbcType="INTEGER"/>
+            <result column="c_create_time" property="createTime"/>
+        </association>
+    </resultMap>
+
+    <!--学生查询申请记录-->
+    <select id="getApplyRecordByStudentId" resultMap="apply_record_map">
+        select ar.id as a_id,ar.apply_status as a_apply_status,ar.expiration_time as a_expiration_time,ar.nick_name as a_nick_name,ar.apply_time as a_apply_time,
+               us.id as s_id,us.nick_name as s_nick_name,us.email as s_email,us.phone_number as s_phone_number,us.nick_name as s_nick_name,
+               ut.id as t_id,ut.nick_name as t_nick_name,ut.email as t_email,ut.phone_number as t_phone_number,ut.nick_name as t_nick_name,
+               cr.id as c_id,cr.name as c_name,cr.accouncement as c_accouncement,cr.number as c_number,cr.create_time as c_create_time
+        from link_code.t_apply_record ar
+                 left join link_code.t_user us
+                           on ar.student_id = us.id
+                 left join link_code.t_user ut
+                           on ar.teacher_id = ut.id
+                 left join link_code.t_classroom cr
+                           on ar.classroom_id = cr.id
+        where ar.student_id = #{studentId}
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--教师查询申请记录-->
+    <select id="getApplyRecordByTeacherId" resultMap="apply_record_map">
+        select ar.id as a_id,ar.apply_status as a_apply_status,ar.expiration_time as a_expiration_time,ar.nick_name as a_nick_name,ar.apply_time as a_apply_time,
+               us.id as s_id,us.nick_name as s_nick_name,us.email as s_email,us.phone_number as s_phone_number,us.nick_name as s_nick_name,
+               ut.id as t_id,ut.nick_name as t_nick_name,ut.email as t_email,ut.phone_number as t_phone_number,ut.nick_name as t_nick_name,
+               cr.id as c_id,cr.name as c_name,cr.accouncement as c_accouncement,cr.number as c_number,cr.create_time as c_create_time
+        from link_code.t_apply_record ar
+                 left join link_code.t_user us
+                           on ar.student_id = us.id
+                 left join link_code.t_user ut
+                           on ar.teacher_id = ut.id
+                 left join link_code.t_classroom cr
+                           on ar.classroom_id = cr.id
+        where ar.teacher_id = #{teacherId}
+            limit #{start},#{pageSize}
+    </select>
+
+    <select id="getApplyRecordCountByStudentId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select count(1) from link_code.t_apply_record where student_id = #{studentId}
+    </select>
+
+    <select id="getApplyRecordCountByTeacherId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select count(1) from link_code.t_apply_record where teacher_id = #{studentId}
+    </select>
+
+    <select id="getClassRoomStudentCount" resultType="java.lang.Long" parameterType="java.lang.Long">
+        select count(1) from link_code.t_classroom_student where classroom_id = #{classRoomId}
+    </select>
+
+    <!--课堂学生信息map-->
+    <resultMap id="student_info_map" type="world.hzq.linkcode.vo.ClassStudentVO">
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="join_time" property="joinTime" jdbcType="DATETIMEOFFSET"/>
+        <association property="student" javaType="world.hzq.linkcode.entity.User">
+            <id column="id" property="id" jdbcType="BIGINT"/>
+            <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+            <result column="email" property="email" jdbcType="VARCHAR"/>
+            <result column="u_nick_name" property="nickName" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <!--获取指定课堂的学生信息-->
+    <select id="getClassRoomStudentList" resultMap="student_info_map">
+        select u.phone_number,u.email,u.id,u.nick_name as u_nick_name,
+               cs.join_time,cs.nick_name
+            from link_code.t_classroom_student cs
+                left join t_user u
+            on u.id = cs.student_id
+        where classroom_id = #{classRoomId}
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--获取教师创建的班级总数-->
+    <select id="getClassRoomCountByTeacherId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select count(1) from link_code.t_classroom_teacher
+            where teacher_id = #{teacherId}
+    </select>
+
+    <!--获取在班级名称模糊的情况下教师创建的班级总数-->
+    <select id="getCLassRoomCountByTeacherIdAndClassName" resultType="java.lang.Long">
+        select count(1)
+            from link_code.t_classroom_teacher as ct
+                left join link_code.t_classroom as c
+                    on ct.classroom_id = c.id
+            where ct.teacher_id = #{teacherId}
+              and c.name like concat('%',#{className},'%')
+    </select>
+
+    <!--根据教师id获取班级-->
+    <select id="getClassRoomByTeacherId" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select id,name,accouncement,number,create_time
+            from link_code.t_classroom
+        where id in (
+                select classroom_id
+                    from link_code.t_classroom_teacher
+                where teacher_id = #{teacherId}
+            )
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--获取学生加入的班级总数-->
+    <select id="getClassRoomCountByStudentId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select count(1) from link_code.t_classroom_student
+            where student_id = #{studentId}
+    </select>
+
+    <!--根据学生id获取已加入的班级-->
+    <select id="getCLassRoomByStudentId" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select id,name,accouncement,number,create_time
+            from link_code.t_classroom
+        where id in (
+                select classroom_id
+                    from link_code.t_classroom_student
+                where student_id = #{studentId}
+            )
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--根据班级id查找创建人-->
+    <select id="getTeacherByClassRoomId" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.User">
+        select u.nick_name,u.id,u.email,u.phone_number
+            from link_code.t_classroom_teacher ct
+                left join link_code.t_user u
+                    on ct.teacher_id = u.id
+                where ct.classroom_id = #{classRoomId}
+    </select>
+
+    <!--教师模糊搜索自己创建的班级-->
+    <select id="getClassRoomByTeacherIdAndClassName" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select id,name,accouncement,number,create_time
+            from link_code.t_classroom
+        where id in (
+                select classroom_id
+                    from link_code.t_classroom_teacher
+                where teacher_id = #{teacherId}
+            )
+            and name like concat('%',#{className},'%')
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--学生模糊搜索自己未加入的班级-->
+    <select id="getClassRoomStudentNotJoin" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select c.id,c.name,c.accouncement,c.number,c.create_time
+            from link_code.t_classroom c
+                left join link_code.t_classroom_teacher ct
+                    on c.id = ct.classroom_id
+                left join link_code.t_user u
+                    on ct.teacher_id = u.id
+        where c.id not in (
+                select classroom_id
+                    from link_code.t_classroom_student
+                where student_id = #{studentId}
+            )
+            and name like concat('%',#{className},'%')
+            and u.nick_name like concat('%',#{creator},'%')
+        limit #{start},#{pageSize}
+    </select>
+
+    <!--获取学生未加入班级的总数-->
+    <select id="getClassRoomStudentNotJoinCount" resultType="java.lang.Long" parameterType="java.lang.Long">
+        select count(1)
+            from link_code.t_classroom
+        where id not in (select classroom_id from link_code.t_classroom_student where student_id = #{studentId})
+    </select>
+
+    <!--获取在班级名称和创建人名称模糊的情况下学生未加入班级的总数-->
+    <select id="getClassRoomStudentNotJoinCountByCondition" resultType="java.lang.Long">
+        select count(1)
+            from link_code.t_classroom as c
+                left join link_code.t_classroom_teacher as ct
+            on c.id = ct.classroom_id
+                left join link_code.t_user as u
+            on ct.teacher_id = u.id
+        where c.id not in (
+                select classroom_id
+                    from link_code.t_classroom_student
+                where student_id = #{studentId}
+            )
+          and c.name like concat('%',#{className},'%')
+          and u.nick_name like concat('%',#{creator},'%')
+    </select>
+
+</mapper>

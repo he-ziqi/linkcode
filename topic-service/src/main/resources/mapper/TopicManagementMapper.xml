@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.TopicManagementMapper">
+    <!--增加题目信息-->
+    <insert id="insertTopicInfo" useGeneratedKeys="true" keyProperty="id" parameterType="world.hzq.linkcode.entity.Topic">
+        insert into link_code.t_topic(topic_name, topic_comment, difficulty_level, timeout)
+        values(#{topic.topicName},#{topic.topicComment},#{topic.difficultyLevel},#{topic.timeout});
+    </insert>
+
+    <!--增加输入集信息-->
+    <insert id="insertTopicInputList" parameterType="world.hzq.linkcode.entity.TopicInput">
+        insert into link_code.t_topic_input(input_content, topic_id)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.inputContent},#{item.topicId})
+        </foreach>
+    </insert>
+
+    <!--增加题解信息-->
+    <insert id="insertTopicSolutionList" parameterType="world.hzq.linkcode.entity.Solution">
+        insert into link_code.t_solution(answer_code, language_type, comment, topic_id,user_id,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.answerCode},#{item.languageType},#{item.comment},#{item.topicId},#{item.userId},#{item.createTime})
+        </foreach>
+    </insert>
+
+    <!--删除题目信息-->
+    <delete id="removeTopicInfo" parameterType="java.lang.Long">
+        delete from link_code.t_topic where id = #{id}
+    </delete>
+
+    <!--删除输入集信息-->
+    <delete id="removeTopicInput" parameterType="java.lang.Long">
+        delete from link_code.t_topic_input where topic_id = #{id}
+    </delete>
+
+    <!--删除输出集信息-->
+    <delete id="removeTopicOutput" parameterType="java.lang.Long">
+        delete from link_code.t_topic_output where topic_input_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!--删除题解信息-->
+    <delete id="removeTopicSolution" parameterType="java.lang.Long">
+        delete from link_code.t_solution where topic_id = #{id}
+    </delete>
+
+    <!--更新题目信息-->
+    <update id="updateTopicInfo" parameterType="world.hzq.linkcode.entity.Topic">
+        update link_code.t_topic set
+        <if test="#{topic.topicName} != null and #{topic.topicName} != ''">
+            topic_name = #{topic.topicName},
+        </if>
+        <if test="#{topic.topicComment} != null and #{topic.topicComment} != ''">
+            topic_comment = #{topic.topicComment},
+        </if>
+        <if test="#{topic.difficultyLevel} != null and #{topic.difficultyLevel} != '0'.toString()">
+            difficulty_level = #{topic.difficultyLevel},
+        </if>
+        <if test="#{topic.timeout} != null and #{topic.timeout} != '0'.toString()">
+            timeout = #{topic.timeout}
+        </if>
+        where id = #{topic.id}
+    </update>
+
+    <!--批量更新题解-->
+    <update id="updateTopicSolution" parameterType="world.hzq.linkcode.entity.Solution">
+        update link_code.t_solution
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix=" answer_code = case " suffix=" end, ">
+                <foreach collection="list" item="item">
+                    <if test="item.answerCode != null and item.answerCode != ''">
+                        when id = #{item.id} then #{item.answerCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix=" language_type = case " suffix=" end, ">
+                <foreach collection="list" item="item">
+                    <if test="item.languageType != null and item.languageType != ''">
+                        when id = #{item.id} then #{item.languageType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix=" comment = case " suffix=" end, ">
+                <foreach collection="list" item="item">
+                    <if test="item.comment != null and item.comment != ''">
+                        when id = #{item.id} then #{item.comment}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.id}
+        </foreach>
+    </update>
+
+    <!--添加输出集-->
+    <insert id="insertTopicOutput" parameterType="world.hzq.linkcode.entity.TopicOutput">
+        insert into link_code.t_topic_output(output_content, topic_input_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.outputContent},#{item.topicInputId})
+        </foreach>
+    </insert>
+
+</mapper>

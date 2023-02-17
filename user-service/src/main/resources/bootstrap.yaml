@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: user-service
+  cloud:
+    nacos:
+      #配置中心
+      config:
+        #服务地址
+        server-addr: localhost:8848
+        #配置文件后缀
+        file-extension: yaml
+        #共享配置
+        shared-configs:
+          - data-id: common-redis.yaml
+          - data-id: common-swagger.yaml
+          - data-id: common-mysql.yaml
+          - data-id: common-elasticsearch.yaml
+            refresh: true
+        #开启自动刷新，修改配置文件后服务自动重启，读取最新配置
+        refresh-enabled: true
+      #服务注册
+      discovery:
+        #服务地址
+        server-addr: localhost:8848

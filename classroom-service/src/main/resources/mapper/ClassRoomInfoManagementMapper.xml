@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.ClassRoomInfoManagementMapper">
+    <!--创建班级-->
+    <insert id="createClassRoom" parameterType="world.hzq.linkcode.entity.ClassRoom" useGeneratedKeys="true" keyProperty="id">
+        insert into link_code.t_classroom(name, accouncement, number, create_time)
+        values (#{name},#{accouncement},#{number},#{createTime})
+    </insert>
+
+    <!--删除学生班级关系-->
+    <delete id="deleteClassRoomStudentRelationByClassRoomId" parameterType="java.lang.Long">
+        delete from link_code.t_classroom_student where classroom_id = #{classRoomId}
+    </delete>
+
+    <!--删除教师班级关系-->
+    <delete id="deleteClassRoomTeacherRelationByClassRoomId" parameterType="java.lang.Long">
+        delete from link_code.t_classroom_teacher where classroom_id = #{classRoomId}
+    </delete>
+
+    <!--删除班级申请记录-->
+    <delete id="deleteClassRoomApplyRecordByClassRoomId" parameterType="java.lang.Long">
+        delete from link_code.t_apply_record where classroom_id = #{classRoomId}
+    </delete>
+
+    <!--删除班级表信息-->
+    <delete id="deleteClassRoomById" parameterType="java.lang.Long">
+        delete from link_code.t_classroom where id = #{classRoomId}
+    </delete>
+
+    <!--删除班级申请记录-->
+    <delete id="deleteClassRoomApplyRecordByClassRoomIdAndStudentId">
+        delete from link_code.t_apply_record where classroom_id = #{classRoomId} and student_id = #{studentId}
+    </delete>
+
+    <!--删除班级学生关系记录-->
+    <delete id="deleteClassRoomStudentRelationByClassRoomIdAndStudentId">
+        delete from link_code.t_classroom_student where classroom_id = #{classRoomId} and student_id = #{studentId}
+    </delete>
+
+    <!--根据班级id和教师id查询班级-->
+    <select id="getClassRoomByTeacherIdAndClassRoomId" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select cr.id,cr.name,cr.accouncement,cr.number,cr.create_time
+            from link_code.t_classroom cr
+                left join link_code.t_classroom_teacher ct
+            on cr.id = ct.classroom_id
+        where cr.id = #{classRoomId} and ct.teacher_id = #{userId}
+    </select>
+
+    <!--加入班级-->
+    <insert id="joinClassRoom">
+        insert into link_code.t_classroom_student(classroom_id, student_id, join_time, nick_name)
+        values (#{classRoomId},#{studentId},#{joinTime},#{nickName})
+    </insert>
+
+    <!--更新班级人数-->
+    <update id="updateClassRoomNumberIncrement">
+        update link_code.t_classroom set number = number + #{number}
+        where id = #{classRoomId}
+    </update>
+
+    <!--更新申请记录-->
+    <update id="updateApplyRecord">
+        update link_code.t_apply_record set apply_status = #{operationType} where id = #{recordId}
+    </update>
+
+    <!--通过id获取班级-->
+    <select id="getClassRoomById" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select id,name,accouncement,number,create_time from link_code.t_classroom where id = #{classRoomId}
+    </select>
+
+    <!--通过班级id找到教师id-->
+    <select id="getTeacherIdByClassRoomId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select teacher_id from link_code.t_classroom_teacher
+        where classroom_id = #{classRoomId}
+    </select>
+
+    <!--添加申请记录-->
+    <insert id="addApplyRecord">
+        insert into link_code.t_apply_record(apply_time, expiration_time, classroom_id, teacher_id, student_id, nick_name)
+        values (#{applyTime},#{timeout},#{classRoomId},#{teacherId},#{studentId},#{nickName})
+    </insert>
+
+    <!--添加教师与班级的对应关系-->
+    <insert id="addClassRoomTeacherRelation">
+        insert into link_code.t_classroom_teacher(classroom_id, teacher_id)
+        values (#{classRoomId},#{teacherId})
+    </insert>
+
+    <!--获取单条申请记录-->
+    <select id="getApplyRecordById" parameterType="java.lang.Long" resultMap="world.hzq.linkcode.mapper.ClassRoomInfoMapper.apply_record_map">
+        select ar.id as a_id,ar.apply_status as a_apply_status,ar.expiration_time as a_expiration_time,ar.nick_name as a_nick_name,
+               us.id as s_id,us.nick_name as s_nick_name,us.email as s_email,us.phone_number as s_phone_number,
+               ut.id as t_id,ut.nick_name as t_nick_name,ut.email as t_email,ut.phone_number as t_phone_number,
+               cr.id as c_id,cr.name as c_name,cr.accouncement as c_accouncement,cr.number as c_number,cr.create_time as c_create_time
+        from link_code.t_apply_record ar
+                 left join link_code.t_user us
+                           on ar.student_id = us.id
+                 left join link_code.t_user ut
+                           on ar.teacher_id = ut.id
+                 left join link_code.t_classroom cr
+                           on ar.classroom_id = cr.id
+        where ar.id = #{recordId}
+    </select>
+
+</mapper>

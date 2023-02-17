@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.JobDataStatisticsMapper">
+
+
+    <!--通过指定状态及是否通过条件获取学生信息列表-->
+    <select id="getStudentBySubmitStatusAndAccepted" resultType="world.hzq.linkcode.entity.User">
+        select u.id, u.nick_name, u.email, u.phone_number
+            from link_code.t_user as u
+                left join link_code.t_job_commit as jc
+                    on u.id = jc.student_id
+            where jc.type = #{type}
+                and jc.status = #{status}
+                and jc.job_id = #{choiceTopicId}
+                and jc.classroom_id = #{classRoomId}
+                and jc.accepted = #{accepted}
+    </select>
+
+    <!--通过学生id和班级id获取学生昵称-->
+    <select id="getStudentNickNameById" resultType="java.lang.String">
+        select nick_name from link_code.t_classroom_student
+            where student_id = #{studentId}
+              and classroom_id = #{classRoomId}
+    </select>
+
+</mapper>

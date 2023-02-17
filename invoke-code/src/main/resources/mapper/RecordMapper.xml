@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.RecordMapper">
+
+    <!--存储用户执行记录-->
+    <insert id="saveRecord" parameterType="world.hzq.linkcode.entity.SolutionRecord">
+        insert into
+            link_code.t_solution_record (user_id, topic_id, topic_status_type, msg, code_content, language_type, update_time, accept_count, invoke_time)
+        values (#{userId},#{topicId},#{topicStatusType},#{msg},#{codeContent},#{languageType},#{updateTime},#{acceptCount},#{invokeTime})
+    </insert>
+
+    <!--插入题目状态-->
+    <insert id="insertTopicStatus">
+        insert into link_code.t_accepted_topic(status, topic_id, user_id)
+        values (#{status},#{topicId},#{userId})
+    </insert>
+
+    <select id="existsTopicStatus" resultType="java.lang.String">
+        select status from link_code.t_accepted_topic where user_id = #{userId} and topic_id = #{topicId}
+    </select>
+
+    <update id="updateTopicStatus">
+        update link_code.t_accepted_topic set status = #{status}
+        where user_id = #{userId} and topic_id = #{topicId}
+    </update>
+
+</mapper>

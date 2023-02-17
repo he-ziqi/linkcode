@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="job-service" />
+        <module name="common-service" />
+        <module name="invoke-code" />
+        <module name="topic-service" />
+        <module name="gateway-service" />
+        <module name="user-service" />
+        <module name="file-service" />
+        <module name="mail-service" />
+        <module name="classroom-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="classroom-management" target="1.8" />
+      <module name="classroom-service" target="1.8" />
+      <module name="code-invoke" target="1.8" />
+      <module name="common-service" target="1.8" />
+      <module name="config-center" target="1.8" />
+      <module name="file-service" target="1.8" />
+      <module name="gateway-service" target="1.8" />
+      <module name="invoke-code" target="1.8" />
+      <module name="job-management" target="1.8" />
+      <module name="job-service" target="1.8" />
+      <module name="linkcode" target="1.8" />
+      <module name="mail" target="1.8" />
+      <module name="mail-service" target="1.8" />
+      <module name="sjm-nacos-client" target="1.8" />
+      <module name="topic-service" target="1.8" />
+      <module name="user-service" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="classroom-management" options="-parameters" />
+      <module name="classroom-service" options="-parameters" />
+      <module name="code-invoke" options="-parameters" />
+      <module name="common-service" options="-parameters" />
+      <module name="config-center" options="-parameters" />
+      <module name="file-service" options="-parameters" />
+      <module name="gateway-service" options="-parameters" />
+      <module name="invoke-code" options="-parameters" />
+      <module name="job-management" options="-parameters" />
+      <module name="job-service" options="-parameters" />
+      <module name="linkcode" options="" />
+      <module name="mail" options="-parameters" />
+      <module name="mail-service" options="-parameters" />
+      <module name="sjm-nacos-client" options="-parameters" />
+      <module name="topic-service" options="-parameters" />
+      <module name="user-service" options="-parameters" />
+    </option>
+  </component>
+</project>

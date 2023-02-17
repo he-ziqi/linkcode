@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.TopicInfoMapper">
+
+    <!--获取输入集列表-->
+    <select id="getTopicInputListById" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.TopicInput">
+        select id,input_content,topic_id
+        from link_code.t_topic_input
+        where topic_id = #{id}
+    </select>
+
+    <!--获取输出集列表-->
+    <select id="getTopicOutputList" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.TopicOutput">
+        select id,output_content,topic_input_id
+        from link_code.t_topic_output
+        where topic_input_id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--分页获取题目信息-->
+    <select id="getTopicInfo" resultType="world.hzq.linkcode.entity.Topic">
+        select id,topic_name,topic_comment,difficulty_level,timeout,status
+        from link_code.t_topic
+        limit #{start},#{count}
+    </select>
+
+    <!--获取题解信息-->
+    <select id="getTopicSolutionList" resultType="world.hzq.linkcode.entity.Solution">
+        select id,answer_code,language_type,comment,topic_id,user_id
+            from link_code.t_solution
+        where topic_id = #{topicId} and language_type = #{languageType}
+    </select>
+
+    <!--通过题目名称获取题目-->
+    <select id="getTopicInfoByTopicName" parameterType="java.lang.String" resultType="world.hzq.linkcode.entity.Topic">
+        select id,topic_name,topic_comment,difficulty_level,timeout,status
+        from link_code.t_topic
+        where topic_name = #{topicName}
+    </select>
+
+    <!--获取题目信息-->
+    <select id="getTopic" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.Topic">
+        select id,topic_name,topic_comment,difficulty_level,timeout,status
+        from link_code.t_topic
+        where id = #{id}
+    </select>
+
+    <!--通过题目id获取输入集的id集合-->
+    <select id="getTopicInputIdList" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select id from link_code.t_topic_input where topic_id = #{id}
+    </select>
+
+    <!--获取题目总数-->
+    <select id="getTopicCount" resultType="java.lang.Long">
+        select count(1) from link_code.t_topic
+    </select>
+
+    <!--获取题目状态-->
+    <select id="getTopicStatus" resultType="java.lang.String">
+        select status from link_code.t_accepted_topic
+        where user_id = #{userId} and topic_id = #{topicId}
+    </select>
+
+
+</mapper>

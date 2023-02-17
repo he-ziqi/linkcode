@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.JobInfoMapper">
+
+    <!--如果超时则更新选择题题目状态-->
+    <update id="updateChoiceTopicStatus" parameterType="java.lang.String">
+        update link_code.t_job_commit jc,link_code.t_choice_topic ct set jc.status = #{status}
+            where jc.type = 'choice_topic_type'
+              and jc.job_id = ct.id
+              and ct.stop_time &lt;= now()
+    </update>
+
+    <!--如果超时则更新编程题题目状态-->
+    <update id="updateProgramTopicStatus" parameterType="java.lang.String">
+        update link_code.t_job_commit jc,link_code.t_programing_topic pt set jc.status = #{status}
+            where jc.type = 'program_topic_type'
+              and jc.job_id = pt.id
+              and pt.stop_time &lt;= now()
+    </update>
+
+    <!--获取选择题作业记录数量-->
+    <select id="getChoiceJobInfoCount" resultType="java.lang.Long">
+        select count(1)
+            from link_code.t_choice_topic
+        where teacher_id = #{teacherId} and classroom_id = #{classRoomId}
+    </select>
+
+    <!--获取编程题目记录数量-->
+    <select id="getProgramJobInfoCount" resultType="java.lang.Long">
+        select count(1)
+            from link_code.t_programing_topic
+        where teacher_id = #{teacherId} and classroom_id = #{classRoomId}
+    </select>
+
+    <!--根据id获取教师-->
+    <select id="getTeacherById" resultType="world.hzq.linkcode.entity.User">
+        select id,nick_name,email,phone_number
+            from link_code.t_user
+        where id = #{teacherId}
+    </select>
+
+    <!--根据id获取课堂信息-->
+    <select id="getClassRoomById" resultType="world.hzq.linkcode.entity.ClassRoom">
+        select id,name,accouncement,number,create_time
+            from link_code.t_classroom
+        where id = #{classRoomId}
+    </select>
+
+    <!--根据教师id和班级id获取选择题信息-->
+    <select id="getChoiceJobByTeacherIdAndClassRoomId" resultType="world.hzq.linkcode.entity.ChoiceTopic">
+        select id,content,answer,create_time,stop_time,type
+            from link_code.t_choice_topic
+        where teacher_id = #{teacherId} and classroom_id = #{classRoomId}
+            limit #{start},#{pageSize}
+    </select>
+
+
+    <!--查询编程题信息的map-->
+    <resultMap id="program_topic_info" type="world.hzq.linkcode.entity.ProgramTopic">
+        <id column="pt_id" property="id" jdbcType="BIGINT"/>
+        <result column="pt_description" property="description" jdbcType="VARCHAR"/>
+        <result column="pt_create_time" property="createTime" jdbcType="DATETIMEOFFSET"/>
+        <result column="pt_stop_time" property="stopTime" jdbcType="DATETIMEOFFSET"/>
+        <result column="pt_type" property="type" jdbcType="VARCHAR"/>
+        <association property="topic" javaType="world.hzq.linkcode.entity.Topic">
+            <id column="t_id" property="id" jdbcType="BIGINT"/>
+            <result column="t_topic_name" property="topicName" jdbcType="VARCHAR"/>
+            <result column="t_topic_comment" property="topicComment" jdbcType="VARCHAR"/>
+            <result column="t_difficulty_level" property="difficultyLevel" jdbcType="TINYINT"/>
+            <result column="t_timeout" property="timeout" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <!--根据教师id和班级id获取编程题信息-->
+    <select id="getProgramJobByTeacherIdAndClassRoomId" resultMap="program_topic_info">
+        select pt.id as pt_id,pt.description as pt_description,pt.create_time as pt_create_time,pt.stop_time as pt_stop_time,pt.type as pt_type,
+               t.id as t_id,t.topic_name as t_topic_name,t.topic_comment as t_topic_comment,t.difficulty_level as t_difficulty_level,t.timeout as t_timeout
+            from link_code.t_programing_topic pt
+                left join link_code.t_topic t
+                    on pt.topic_id = t.id
+                where pt.teacher_id = #{teacherId} and pt.classroom_id = #{classRoomId}
+            limit #{start},#{pageSize}
+    </select>
+
+    <!--通过班级id获取到该班级的教师id-->
+    <select id="getTeacherByClassRoomId" resultType="java.lang.Long">
+        select teacher_id from link_code.t_classroom_teacher
+            where classroom_id = #{classRoomId}
+    </select>
+
+    <!--根据学生id、题目id、班级id、题目类型查询学生题目的提交状态-->
+    <select id="getTopicCommitStatus" resultType="java.lang.String">
+        select status from link_code.t_job_commit
+            where type = #{type}
+              and classroom_id = #{classRoomId}
+              and student_id = #{studentId}
+              and job_id = #{jobId}
+    </select>
+
+</mapper>

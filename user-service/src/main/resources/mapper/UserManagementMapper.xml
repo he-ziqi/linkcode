@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.UserManagementMapper">
+    <select id="getUserByNickName" parameterType="java.lang.String" resultType="world.hzq.linkcode.entity.User">
+        select id,nick_name,avatar_addr,email,phone_number,password
+            from link_code.t_user
+        where nick_name = #{nickName}
+    </select>
+
+    <select id="getUserByEmail" parameterType="java.lang.String" resultType="world.hzq.linkcode.entity.User">
+        select id,nick_name,avatar_addr,email,phone_number,password
+            from link_code.t_user
+        where email = #{email}
+    </select>
+
+    <select id="getUserByPhoneNumber" parameterType="java.lang.String" resultType="world.hzq.linkcode.entity.User">
+        select id,nick_name,avatar_addr,email,phone_number,password
+            from link_code.t_user
+        where phone_number = #{phoneNumber}
+    </select>
+
+    <insert id="addUser" parameterType="world.hzq.linkcode.dto.RegistrationDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into
+            link_code.t_user(nick_name, password, email, phone_number)
+        values (#{userInfo.nickName},#{userInfo.password},#{userInfo.email},#{userInfo.phoneNumber})
+    </insert>
+
+    <select id="getUserByPhoneNumberAndPassword" resultType="world.hzq.linkcode.entity.User">
+        select u.id,u.nick_name,u.avatar_addr,u.password,u.email,u.phone_number,r.role_name
+            from link_code.t_user u left join t_role r on u.id = r.user_id
+        where u.phone_number = #{phoneNumber} and u.password = #{password} and r.role_name = #{roleType}
+    </select>
+
+    <select id="getUserByNickNameAndPassword" resultType="world.hzq.linkcode.entity.User">
+        select u.id,u.nick_name,u.avatar_addr,u.password,u.email,u.phone_number,r.role_name
+            from link_code.t_user u left join t_role r on u.id = r.user_id
+        where u.nick_name = #{nickName} and u.password = #{password} and r.role_name = #{roleType}
+    </select>
+
+    <select id="getUserById" parameterType="java.lang.Long" resultType="world.hzq.linkcode.entity.User">
+        select id,nick_name,avatar_addr,password,email,phone_number
+            from link_code.t_user
+        where id = #{id}
+    </select>
+
+    <update id="updatePasswordById">
+        update link_code.t_user set password = #{password} where id = #{id}
+    </update>
+
+    <update id="updateAvatarPathById">
+        update link_code.t_user set avatar_addr = #{avatarPath} where id = #{id}
+    </update>
+
+    <update id="updatePasswordByPhoneNumberAndEmail">
+        update link_code.t_user set password = #{newPassword}
+            where phone_number = #{phoneNumber} and email = #{mail}
+    </update>
+
+    <insert id="addRole">
+        insert into link_code.t_role(user_id, role_name, authority_level)
+        values (#{userId},#{roleName},#{authorityLevel})
+    </insert>
+
+    <select id="getUserByEmailAndRole" resultType="world.hzq.linkcode.entity.User">
+        select u.id,u.nick_name,u.avatar_addr,u.password,u.email,u.phone_number,r.role_name
+        from link_code.t_user u left join t_role r on u.id = r.user_id
+        where u.email = #{email} and r.role_name = #{roleType}
+    </select>
+
+</mapper>

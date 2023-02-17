@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="world.hzq.linkcode.mapper.JobManagementMapper">
+
+    <!--发布一个选择题-->
+    <insert id="addChoiceTopic" parameterType="world.hzq.linkcode.dto.AddChoiceTopicDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into link_code.t_choice_topic(content, answer, stop_time, classroom_id, teacher_id)
+        values (#{content},#{answer},#{stopTime},#{classRoomId},#{teacherId})
+    </insert>
+
+    <!--批量发布选择题-->
+    <insert id="bulkAddChoiceTopic" parameterType="world.hzq.linkcode.dto.AddChoiceTopicDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into link_code.t_choice_topic(content, answer, stop_time, classroom_id, teacher_id)
+        values
+        <foreach collection="list" separator="," item="topic">
+            (
+                #{topic.content},
+                #{topic.answer},
+                #{topic.stopTime},
+                #{topic.classRoomId},
+                #{topic.teacherId}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量发布编程题-->
+    <insert id="bulkAddProgramTopic" parameterType="world.hzq.linkcode.dto.AddProgramingTopicDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into link_code.t_programing_topic(description, stop_time, classroom_id, teacher_id, topic_id)
+        values
+        <foreach collection="list" separator="," item="topic">
+            (
+                #{topic.description},
+                #{topic.stopTime},
+                #{topic.classRoomId},
+                #{topic.teacherId},
+                #{topic.topicId}
+            )
+        </foreach>
+    </insert>
+
+    <!--初始化当前班级下所有学生的选择题提交记录到作业提交表中-->
+    <insert id="addTopicCommitRecord">
+        insert into link_code.t_job_commit(job_id, type, student_id, status, classroom_id)
+        values
+        <foreach collection="studentIdList" separator="," item="studentId">
+            (
+                #{jobId},
+                #{type},
+                #{studentId},
+                #{status},
+                #{classRoomId}
+            )
+        </foreach>
+    </insert>
+
+    <!--提交作业 更新提交作业记录-->
+    <update id="updateJobCommitRecord">
+        update link_code.t_job_commit
+            set content = #{submitJobDTO.content},
+                commit_time = #{commitTime},
+                status = #{status},
+                accepted = #{ac}
+        where type = #{submitJobDTO.type}
+          and student_id = #{studentId}
+          and job_id = #{submitJobDTO.jobId}
+          and classroom_id = #{submitJobDTO.classRoomId}
+    </update>
+
+    <!--获取该班级的所有学生id-->
+    <select id="getClassRoomStudentIdList" resultType="java.lang.Long" parameterType="java.lang.Long">
+        select student_id from link_code.t_classroom_student where classroom_id = #{classRoomId}
+    </select>
+
+    <!--获取选择题作业的截止提交时间-->
+    <select id="getChoiceTopicStopTime" parameterType="java.lang.Long" resultType="java.util.Date">
+        select stop_time from link_code.t_choice_topic where id = #{id}
+    </select>
+
+    <!--获取编程题作业的截止提交时间-->
+    <select id="getProgramTopicStopTime" parameterType="java.lang.Long" resultType="java.util.Date">
+        select stop_time from link_code.t_programing_topic where id = #{id}
+    </select>
+
+    <!--通过选择题id获取题目答案-->
+    <select id="getChoiceTopicAnswer" resultType="java.lang.String">
+        select answer from link_code.t_choice_topic where id = #{jobId}
+    </select>
+
+    <!--通过编程题题目id获取真正的题目id-->
+    <select id="getRealProgramTopicId" resultType="java.lang.Long">
+        select topic_id from link_code.t_programing_topic where id = #{id}
+    </select>
+
+
+</mapper>

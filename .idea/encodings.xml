@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/classroom-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/file-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gateway-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/invoke-code/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/job-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mail-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/topic-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/user-service/src/main/java" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
