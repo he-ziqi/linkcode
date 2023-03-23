@@ -12,6 +12,7 @@ public enum LanguageType implements EnumType{
     JAVA("Java","dynamic_compile_java"),
     JAVASCRIPT("JavaScript","script_engine_javascript"),
     C("C","process_compile_c"),
+    PYTHON("Python","script_engine_python"),
     ;
     private String code;
     private String name;

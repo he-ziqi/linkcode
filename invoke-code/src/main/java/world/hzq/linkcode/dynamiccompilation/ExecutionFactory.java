@@ -15,6 +15,7 @@ public class ExecutionFactory {
         engineMap.put(LanguageType.JAVA,new JavaExecutionEngine());
         engineMap.put(LanguageType.JAVASCRIPT,new JavaScriptExecutionEngine());
         engineMap.put(LanguageType.C,new CExecutionEngine());
+        engineMap.put(LanguageType.PYTHON,new PythonExecutionEngine());
     }
 
     public static ExecutionEngine getExecutionEngineByType(LanguageType languageType){
